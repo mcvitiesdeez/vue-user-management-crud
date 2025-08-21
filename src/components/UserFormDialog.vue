@@ -105,7 +105,7 @@
           color="primary"
           variant="flat"
           :loading="isSubmitting"
-          :disabled="!valid"
+          :disabled="!valid || isSubmitting"
           @click="handleSubmit"
         >
           {{ isEditing ? 'Update User' : 'Add User' }}
@@ -127,8 +127,10 @@ interface Props {
 
 interface Emits {
   (e: 'update:modelValue', value: boolean): void
-  (e: 'submit', data: UserFormData): void
+  (e: 'submit', data: UserFormData): Promise<void> | void
   (e: 'cancel'): void
+  (e: 'success'): void
+  (e: 'error', error: string): void
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -174,8 +176,7 @@ const dobRules = [(v: string) => !!v || 'Date of birth is required']
 const genderRules = [(v: string) => !!v || 'Gender is required']
 
 const previewUrl = ref<string | null>(null)
-const placeholderImage =
-  'https://firebasestorage.googleapis.com/v0/b/vue-user-management-649ca.firebasestorage.app/o/profile_photos%2FplaceholderProfilePicture.png?alt=media&token=5c6b58a3-c8c9-462f-9fb5-689e3e014f33'
+const placeholderImage = '/placeholderProfilePicture.png'
 
 watch(
   () => props.currentUser,
@@ -201,7 +202,6 @@ const handleFileChange = (event: Event & { target: HTMLInputElement }) => {
 const handleSubmit = async () => {
   const { valid: isValid } = await formRef.value.validate()
   if (!isValid) return
-
   isSubmitting.value = true
 
   try {
@@ -214,8 +214,9 @@ const handleSubmit = async () => {
       profilepicture: formData.profilepicture,
     }
     emit('submit', submitData)
-    emit('update:modelValue', false)
-  } finally {
+  } catch (error) {
+    console.error('Error submitting form:', error)
+    emit('error', error instanceof Error ? error.message : String(error))
     isSubmitting.value = false
   }
 }
