@@ -128,7 +128,6 @@ const showDialogHandler = () => {
 const handleUserSubmit = async (formData: UserFormData) => {
   try {
     if (isEditing.value && currentUser.value) {
-      // Update existing user
       await UserService.updateUser(
         currentUser.value.id!,
         formData,
@@ -136,11 +135,9 @@ const handleUserSubmit = async (formData: UserFormData) => {
       )
       showNotification('User updated successfully!', 'success')
     } else {
-      // Add new user
       await UserService.addUser(formData)
       showNotification('User added successfully!', 'success')
     }
-
     handleDialogCancel()
     loadUsers()
   } catch (error) {

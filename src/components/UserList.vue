@@ -232,8 +232,7 @@ const filters = ref<FilterOptions>({
   gender: '',
 })
 
-const placeholderImage =
-  'https://firebasestorage.googleapis.com/v0/b/vue-user-management-649ca.firebasestorage.app/o/profile_photos%2FplaceholderProfilePicture.png?alt=media&token=5c6b58a3-c8c9-462f-9fb5-689e3e014f33'
+const placeholderImage = '/placeholderProfilePicture.png'
 
 const headers = [
   { title: 'Profile', key: 'profilepicture', sortable: false },
